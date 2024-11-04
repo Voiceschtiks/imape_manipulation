@@ -1,0 +1,48 @@
+from PIL import Image
+
+def encrypt_image(image_path, key):
+    image = Image.open(image_path)  # Open the image from the specified path
+    pixels = image.load()  # Load pixel data for manipulation
+    width, height = image.size  # Get width and height of the image
+
+    # Create a blank image for the encrypted version
+    encrypted_image = Image.new(image.mode, (width, height))
+    encrypted_pixels = encrypted_image.load()  # Load pixels for the new encrypted image
+
+    # Simple encryption: swap pixels based on a key
+    for x in range(width):
+        for y in range(height):
+            r, g, b = pixels[x, y]  # Get the RGB values of the pixel at (x, y)
+            new_x = (x + key) % width  # Calculate new x position based on the key
+            new_y = (y + key) % height  # Calculate new y position based on the key
+            encrypted_pixels[new_x, new_y] = (r, g, b)  # Set the new pixel value in the encrypted image
+
+    encrypted_image.save(r"C:\Users\hp\Desktop\voice_codes\encrypted_image.jpg")  # Save the encrypted image
+    print("Encrypted image saved as 'encrypted_image.jpg'.")
+
+def decrypt_image(encrypted_image_path, key):
+    image = Image.open(encrypted_image_path)  # Open the encrypted image
+    pixels = image.load()  # Load pixel data for manipulation
+    width, height = image.size  # Get width and height of the image
+
+    # Create a blank image for the decrypted version
+    decrypted_image = Image.new(image.mode, (width, height))
+    decrypted_pixels = decrypted_image.load()
+
+    # Simple decryption: reverse the encryption process
+    for x in range(width):
+        for y in range(height):
+            r, g, b = pixels[x, y]
+            new_x = (x - key + width) % width  # Adjust for negative indices
+            new_y = (y - key + height) % height
+            decrypted_pixels[new_x, new_y] = (r, g, b)
+
+    decrypted_image.save(r"C:\Users\hp\Desktop\voice_codes\decrypted_image.jpg")  # Save the decrypted image
+    print("Decrypted image saved as 'decrypted_image.jpg'.")
+
+if __name__ == "__main__":
+    image_path = r"C:\Users\hp\Desktop\voice_codes\ame.jpg"  # Specify the path to the image
+    key = 10  # Adjust the key as needed
+
+    encrypt_image(image_path, key)  # Call to encrypt the image with the specified path
+    decrypt_image(r"C:\Users\hp\Desktop\voice_codes\encrypted_image.jpg", key)  # Call to decrypt the image
